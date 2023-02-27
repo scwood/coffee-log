@@ -1,37 +1,30 @@
 import { MantineProvider } from "@mantine/core";
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import { BrewHistory } from "./BrewHistory";
 import { CoffeeList } from "./CoffeeList";
 import { Layout } from "./Layout";
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <Layout />,
-      children: [
-        {
-          index: true,
-          element: <CoffeeList />,
-        },
-        {
-          path: "coffees/:coffeeId",
-          element: <BrewHistory />,
-        },
-        {
-          path: "*",
-          element: <Navigate to="/" />,
-        },
-      ],
-    },
-  ],
-  { basename: "/coffee-log" }
-);
+const router = createHashRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <CoffeeList />,
+      },
+      {
+        path: "coffees/:coffeeId",
+        element: <BrewHistory />,
+      },
+      {
+        path: "*",
+        element: <Navigate to="/" />,
+      },
+    ],
+  },
+]);
 
 export function App() {
   return (
