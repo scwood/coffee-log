@@ -8,7 +8,7 @@ import {
   Title,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 
 import { useBoolean } from "../hooks/useBoolean";
 import { useCoffeeApi } from "../hooks/useCoffeeApi";
@@ -27,7 +27,7 @@ export function BrewHistory() {
   const coffee = coffeeId ? getCoffeeById(coffeeId) : undefined;
 
   if (!coffee) {
-    return null;
+    return <Navigate to="/" />;
   }
 
   return (

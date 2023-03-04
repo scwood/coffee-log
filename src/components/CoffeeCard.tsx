@@ -1,16 +1,17 @@
 import { ActionIcon, Anchor, Card, Group, Menu, Text } from "@mantine/core";
-import { IconDots, IconTrash } from "@tabler/icons-react";
+import { IconDots, IconPencil, IconTrash } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 import { Coffee } from "../types/Coffee";
 
 export interface CoffeeCardProps {
   coffee: Coffee;
-  onDelete: (coffeeId: string) => void;
+  onDelete: (coffee: Coffee) => void;
+  onEdit: (coffee: Coffee) => void;
 }
 
 export function CoffeeCard(props: CoffeeCardProps) {
-  const { coffee, onDelete } = props;
+  const { coffee, onDelete, onEdit } = props;
 
   return (
     <Card shadow="sm" p="md" radius="sm" withBorder>
@@ -24,9 +25,15 @@ export function CoffeeCard(props: CoffeeCardProps) {
           </Menu.Target>
           <Menu.Dropdown>
             <Menu.Item
+              icon={<IconPencil size={14} />}
+              onClick={() => onEdit(coffee)}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
               icon={<IconTrash size={14} />}
               color="red"
-              onClick={() => onDelete(coffee.id)}
+              onClick={() => onDelete(coffee)}
             >
               Delete
             </Menu.Item>

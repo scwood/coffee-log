@@ -8,6 +8,7 @@ export function useCoffeeApi() {
     {
       defaultValue: {},
       key: "coffeesById",
+      getInitialValueInEffect: false,
     }
   );
 
@@ -19,7 +20,7 @@ export function useCoffeeApi() {
     return coffeesById[id];
   }
 
-  function createCoffee(coffee: Coffee) {
+  function createOrUpdateCoffee(coffee: Coffee) {
     setCoffeesById((prev) => {
       return {
         ...prev,
@@ -32,9 +33,7 @@ export function useCoffeeApi() {
     setCoffeesById((prev) => {
       const copy = { ...prev };
       delete copy[coffeeId];
-      return {
-        ...copy,
-      };
+      return copy;
     });
   }
 
@@ -73,7 +72,7 @@ export function useCoffeeApi() {
   return {
     getCoffees,
     getCoffeeById,
-    createCoffee,
+    createOrUpdateCoffee,
     deleteCoffee,
     createBrew,
     deleteBrew,

@@ -1,23 +1,29 @@
 import { useState } from "react";
 import { Button, Group, Modal, TextInput } from "@mantine/core";
-import { v4 as uuidV4 } from "uuid";
 
 import { Coffee } from "../types/Coffee";
 
 export interface CoffeeModalProps {
+  coffee?: Coffee;
   opened: boolean;
   onClose: () => void;
-  onSave: (coffee: Coffee) => void;
+  onSave: (name: string) => void;
 }
 
 export function CoffeeModal(props: CoffeeModalProps) {
-  const { opened, onClose, onSave } = props;
-  const [name, setName] = useState("");
+  const { coffee, opened, onClose, onSave } = props;
+  const [name, setName] = useState(coffee?.name || "");
   const isValid = name.trim().length > 0;
+
+  const [prevOpened, setPrevOpened] = useState(opened);
+  if (prevOpened !== opened) {
+    setName(coffee?.name || "");
+    setPrevOpened(opened);
+  }
 
   return (
     <Modal
-      title="New coffee"
+      title={`${coffee ? "Edit" : "New"} coffee`}
       size="xs"
       centered
       opened={opened}
@@ -39,8 +45,7 @@ export function CoffeeModal(props: CoffeeModalProps) {
           color="green"
           disabled={!isValid}
           onClick={() => {
-            onSave({ name, id: uuidV4(), brewHistory: [] });
-            setName("");
+            onSave(name);
             onClose();
           }}
         >
