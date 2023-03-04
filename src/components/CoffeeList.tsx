@@ -16,7 +16,8 @@ export function CoffeeList() {
   ] = useBoolean(false);
   const [coffeeToEdit, setCoffeeToEdit] = useState<Coffee | undefined>();
 
-  const { createOrUpdateCoffee, getCoffees, deleteCoffee } = useCoffeeApi();
+  const { createCoffee, updateCoffee, getCoffees, deleteCoffee } =
+    useCoffeeApi();
   const coffees = getCoffees();
 
   function openCreateModal() {
@@ -31,9 +32,9 @@ export function CoffeeList() {
 
   function handleSave(name: string) {
     if (coffeeToEdit) {
-      createOrUpdateCoffee({ ...coffeeToEdit, name });
+      updateCoffee({ ...coffeeToEdit, name });
     } else {
-      createOrUpdateCoffee({ id: uuidV4(), name, brewHistory: [] });
+      createCoffee(name);
     }
   }
 
@@ -65,7 +66,8 @@ export function CoffeeList() {
         </Text>
       )}
       <CoffeeModal
-        coffee={coffeeToEdit}
+        title={coffeeToEdit ? "Edit coffee" : "New coffee"}
+        initialValues={coffeeToEdit}
         opened={isCoffeeModalOpen}
         onClose={closeCoffeeModal}
         onSave={handleSave}

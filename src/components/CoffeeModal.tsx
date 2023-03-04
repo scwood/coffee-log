@@ -4,31 +4,26 @@ import { Button, Group, Modal, TextInput } from "@mantine/core";
 import { Coffee } from "../types/Coffee";
 
 export interface CoffeeModalProps {
-  coffee?: Coffee;
+  title: string;
   opened: boolean;
+  initialValues?: Coffee;
   onClose: () => void;
   onSave: (name: string) => void;
 }
 
 export function CoffeeModal(props: CoffeeModalProps) {
-  const { coffee, opened, onClose, onSave } = props;
-  const [name, setName] = useState(coffee?.name || "");
+  const { title, opened, initialValues, onClose, onSave } = props;
+  const [name, setName] = useState("");
   const isValid = name.trim().length > 0;
 
   const [prevOpened, setPrevOpened] = useState(opened);
   if (prevOpened !== opened) {
-    setName(coffee?.name || "");
+    setName(initialValues?.name || "");
     setPrevOpened(opened);
   }
 
   return (
-    <Modal
-      title={`${coffee ? "Edit" : "New"} coffee`}
-      size="xs"
-      centered
-      opened={opened}
-      onClose={onClose}
-    >
+    <Modal title={title} size="xs" centered opened={opened} onClose={onClose}>
       <TextInput
         required
         data-autofocus

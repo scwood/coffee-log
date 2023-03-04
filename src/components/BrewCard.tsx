@@ -12,6 +12,7 @@ import {
   IconAlarm,
   IconCoffee,
   IconDots,
+  IconPencil,
   IconScale,
   IconTrash,
 } from "@tabler/icons-react";
@@ -20,11 +21,12 @@ import { Brew } from "../types/Brew";
 
 export interface BrewCardProps {
   brew: Brew;
-  onDelete: (brewId: string) => void;
+  onEdit: (brew: Brew) => void;
+  onDelete: (brew: Brew) => void;
 }
 
 export function BrewCard(props: BrewCardProps) {
-  const { brew, onDelete } = props;
+  const { brew, onEdit, onDelete } = props;
 
   return (
     <Card withBorder shadow="sm" radius="sm">
@@ -45,9 +47,15 @@ export function BrewCard(props: BrewCardProps) {
 
             <Menu.Dropdown>
               <Menu.Item
+                icon={<IconPencil size={14} />}
+                onClick={() => onEdit(brew)}
+              >
+                Edit
+              </Menu.Item>
+              <Menu.Item
                 icon={<IconTrash size={14} />}
                 color="red"
-                onClick={() => onDelete(brew.id)}
+                onClick={() => onDelete(brew)}
               >
                 Delete
               </Menu.Item>

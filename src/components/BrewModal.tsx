@@ -10,44 +10,54 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useState } from "react";
-import { v4 as uuidV4 } from "uuid";
 
 import { Brew } from "../types/Brew";
+import { Coffee } from "../types/Coffee";
 
 export interface BrewModalProps {
+  title: string;
+  coffee: Coffee;
   opened: boolean;
-  previousBrew?: Brew;
+  initialValues?: Partial<Brew>;
   onClose: () => void;
-  onSave: (brew: Brew) => void;
+  onSave: (brewValues: Omit<Brew, "id" | "timestamp">) => void;
 }
 
 export function BrewModal(props: BrewModalProps) {
-  const { previousBrew, opened, onClose, onSave } = props;
+  const { title, coffee, opened, initialValues, onClose, onSave } = props;
   const [doseInGrams, setDoseInGrams] = useState<number | undefined>();
   const [yieldInGrams, setYieldInGrams] = useState<number | undefined>();
   const [timeInSeconds, setTimeInSeconds] = useState<number | undefined>();
   const [rating, setRating] = useState<number | undefined>();
   const [grind, setGrind] = useState("");
   const [notes, setNotes] = useState("");
+  const isValid =
+    doseInGrams !== undefined &&
+    yieldInGrams !== undefined &&
+    timeInSeconds !== undefined &&
+    grind.trim().length > 0;
 
-  // Pre-fill certain values from most recent brew and clear others
   const [prevOpened, setPrevOpened] = useState(opened);
   if (prevOpened !== opened) {
     setPrevOpened(opened);
-    setDoseInGrams(previousBrew?.doseInGrams);
-    setYieldInGrams(previousBrew?.yieldInGrams);
-    setTimeInSeconds(previousBrew?.timeInSeconds);
-    setGrind(previousBrew?.grind ?? "");
-    setNotes("");
-    setRating(undefined);
+    setDoseInGrams(initialValues?.doseInGrams);
+    setYieldInGrams(initialValues?.yieldInGrams);
+    setTimeInSeconds(initialValues?.timeInSeconds);
+    setGrind(initialValues?.grind ?? "");
+    setNotes(initialValues?.notes ?? "");
+    setRating(initialValues?.rating);
   }
 
   return (
-    <Modal title="New brew" centered opened={opened} onClose={onClose}>
+    <Modal title={title} centered opened={opened} onClose={onClose}>
       <Stack>
+        <Group grow>
+          <TextInput label="Coffee" value={coffee.name} disabled />
+        </Group>
         <Group grow>
           <NumberInput
             data-autofocus
+            withAsterisk
             label="Dose (g)"
             min={0}
             placeholder="18"
@@ -55,6 +65,7 @@ export function BrewModal(props: BrewModalProps) {
             onChange={(value) => setDoseInGrams(value)}
           />
           <NumberInput
+            withAsterisk
             label="Yield (g)"
             placeholder="36"
             min={0}
@@ -64,6 +75,7 @@ export function BrewModal(props: BrewModalProps) {
         </Group>
         <Group grow>
           <NumberInput
+            withAsterisk
             label="Brew time (s)"
             placeholder="30"
             min={0}
@@ -71,6 +83,7 @@ export function BrewModal(props: BrewModalProps) {
             onChange={(value) => setTimeInSeconds(value)}
           />
           <TextInput
+            withAsterisk
             label="Grind"
             placeholder="1.5.0"
             value={grind}
@@ -93,15 +106,14 @@ export function BrewModal(props: BrewModalProps) {
             Cancel
           </Button>
           <Button
+            disabled={!isValid}
             color="green"
             onClick={() => {
               onSave({
-                id: uuidV4(),
-                timestamp: Date.now(),
                 rating,
-                yieldInGrams,
-                doseInGrams,
-                timeInSeconds,
+                yieldInGrams: yieldInGrams ?? 0,
+                doseInGrams: doseInGrams ?? 0,
+                timeInSeconds: timeInSeconds ?? 0,
                 grind,
                 notes,
               });

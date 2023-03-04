@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@mantine/hooks";
+import { v4 as uuidV4 } from "uuid";
 
 import { Brew } from "../types/Brew";
 import { Coffee } from "../types/Coffee";
@@ -20,7 +21,17 @@ export function useCoffeeApi() {
     return coffeesById[id];
   }
 
-  function createOrUpdateCoffee(coffee: Coffee) {
+  function createCoffee(name: string) {
+    const id = uuidV4();
+    setCoffeesById((prev) => {
+      return {
+        ...prev,
+        [id]: { id, name, brewHistory: [] },
+      };
+    });
+  }
+
+  function updateCoffee(coffee: Coffee) {
     setCoffeesById((prev) => {
       return {
         ...prev,
@@ -37,7 +48,10 @@ export function useCoffeeApi() {
     });
   }
 
-  function createBrew(coffeeId: string, brew: Brew) {
+  function createBrew(
+    coffeeId: string,
+    brewValues: Omit<Brew, "id" | "timestamp">
+  ) {
     const coffee = getCoffeeById(coffeeId);
     if (!coffee) {
       return;
@@ -47,7 +61,28 @@ export function useCoffeeApi() {
         ...prev,
         [coffeeId]: {
           ...coffee,
-          brewHistory: [brew, ...coffee.brewHistory],
+          brewHistory: [
+            { id: uuidV4(), timestamp: Date.now(), ...brewValues },
+            ...coffee.brewHistory,
+          ],
+        },
+      };
+    });
+  }
+
+  function updateBrew(coffeeId: string, brew: Brew) {
+    const coffee = getCoffeeById(coffeeId);
+    if (!coffee) {
+      return;
+    }
+    setCoffeesById((prev) => {
+      return {
+        ...prev,
+        [coffeeId]: {
+          ...coffee,
+          brewHistory: coffee.brewHistory.map((prevBrew) => {
+            return prevBrew.id === brew.id ? brew : prevBrew;
+          }),
         },
       };
     });
@@ -72,9 +107,11 @@ export function useCoffeeApi() {
   return {
     getCoffees,
     getCoffeeById,
-    createOrUpdateCoffee,
+    createCoffee,
+    updateCoffee,
     deleteCoffee,
     createBrew,
+    updateBrew,
     deleteBrew,
   };
 }

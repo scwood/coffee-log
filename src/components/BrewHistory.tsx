@@ -9,9 +9,11 @@ import {
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { Link, Navigate, useParams } from "react-router-dom";
+import { useState } from "react";
 
 import { useBoolean } from "../hooks/useBoolean";
 import { useCoffeeApi } from "../hooks/useCoffeeApi";
+import { Brew } from "../types/Brew";
 import { BrewCard } from "./BrewCard";
 import { BrewModal } from "./BrewModal";
 
@@ -20,11 +22,32 @@ export function BrewHistory() {
     isBrewModalOpen,
     { setFalse: closeBrewModal, setTrue: openBrewModal },
   ] = useBoolean(false);
+  const [brewToEdit, setBrewToEdit] = useState<Brew | undefined>();
 
   const { coffeeId } = useParams();
-  const { getCoffeeById, createBrew, deleteBrew } = useCoffeeApi();
-
+  const { getCoffeeById, createBrew, updateBrew, deleteBrew } = useCoffeeApi();
   const coffee = coffeeId ? getCoffeeById(coffeeId) : undefined;
+
+  function openCreateModal() {
+    setBrewToEdit(undefined);
+    openBrewModal();
+  }
+
+  function openEditModal(brew: Brew) {
+    setBrewToEdit(brew);
+    openBrewModal();
+  }
+
+  function onSave(brewValues: Omit<Brew, "id" | "timestamp">) {
+    if (!coffee) {
+      return;
+    }
+    if (brewToEdit) {
+      updateBrew(coffee.id, { ...brewToEdit, ...brewValues });
+    } else {
+      createBrew(coffee.id, brewValues);
+    }
+  }
 
   if (!coffee) {
     return <Navigate to="/" />;
@@ -39,7 +62,7 @@ export function BrewHistory() {
       <Divider mt="md" />
       <Group position="apart" align="center" my="lg">
         <Title order={3}>Brew history</Title>
-        <Button color="green" leftIcon={<IconPlus />} onClick={openBrewModal}>
+        <Button color="green" leftIcon={<IconPlus />} onClick={openCreateModal}>
           New brew
         </Button>
       </Group>
@@ -49,6 +72,7 @@ export function BrewHistory() {
             <BrewCard
               key={brew.id}
               brew={brew}
+              onEdit={openEditModal}
               onDelete={() => deleteBrew(coffee.id, brew.id)}
             />
           );
@@ -60,10 +84,16 @@ export function BrewHistory() {
         </Text>
       )}
       <BrewModal
-        previousBrew={coffee.brewHistory[0]}
+        title={brewToEdit ? "Edit brew" : "New brew"}
+        coffee={coffee}
+        initialValues={
+          brewToEdit
+            ? brewToEdit
+            : { ...coffee.brewHistory[0], notes: undefined, rating: undefined }
+        }
         opened={isBrewModalOpen}
         onClose={closeBrewModal}
-        onSave={(brew) => coffee.id && createBrew(coffee.id, brew)}
+        onSave={onSave}
       />
     </>
   );
