@@ -1,7 +1,6 @@
 import { Button, Group, Stack, Text, Title } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
-import { v4 as uuidV4 } from "uuid";
 
 import { useBoolean } from "../hooks/useBoolean";
 import { useCoffeeApi } from "../hooks/useCoffeeApi";

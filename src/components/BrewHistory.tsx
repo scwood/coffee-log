@@ -16,6 +16,7 @@ import { useCoffeeApi } from "../hooks/useCoffeeApi";
 import { Brew } from "../types/Brew";
 import { BrewCard } from "./BrewCard";
 import { BrewModal } from "./BrewModal";
+import { BrewValues } from "../types/BrewValues";
 
 export function BrewHistory() {
   const [
@@ -38,7 +39,7 @@ export function BrewHistory() {
     openBrewModal();
   }
 
-  function onSave(brewValues: Omit<Brew, "id" | "timestamp">) {
+  function onSave(brewValues: BrewValues) {
     if (!coffee) {
       return;
     }

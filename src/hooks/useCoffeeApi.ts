@@ -3,6 +3,8 @@ import { v4 as uuidV4 } from "uuid";
 
 import { Brew } from "../types/Brew";
 import { Coffee } from "../types/Coffee";
+import { EspressoBrew } from "../types/EspressoBrew";
+import { PourOverBrew } from "../types/PourOverBrew";
 
 export function useCoffeeApi() {
   const [coffeesById, setCoffeesById] = useLocalStorage<Record<string, Coffee>>(
@@ -50,7 +52,9 @@ export function useCoffeeApi() {
 
   function createBrew(
     coffeeId: string,
-    brewValues: Omit<Brew, "id" | "timestamp">
+    brewValues:
+      | Omit<EspressoBrew, "id" | "timestamp">
+      | Omit<PourOverBrew, "id" | "timestamp">
   ) {
     const coffee = getCoffeeById(coffeeId);
     if (!coffee) {
