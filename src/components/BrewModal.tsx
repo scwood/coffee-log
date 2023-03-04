@@ -91,9 +91,10 @@ export function BrewModal(props: BrewModalProps) {
     <Modal title={title} centered opened={opened} onClose={onClose}>
       <Stack>
         <Group grow>
-          <TextInput label="Coffee" value={coffee.name} disabled />
+          <TextInput withAsterisk readOnly label="Coffee" value={coffee.name} />
         </Group>
         <Radio.Group
+          withAsterisk
           label="Brew type"
           value={brewType}
           onChange={(value: Brew["brewType"]) => setBrewType(value)}
