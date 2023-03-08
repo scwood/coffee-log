@@ -40,16 +40,30 @@ export function BrewModal(props: BrewModalProps) {
   // Pour over fields
   const [waterInGrams, setWaterInGrams] = useState<number | undefined>();
   const [coffeeInGrams, setCoffeeInGrams] = useState<number | undefined>();
+  const [time, setTime] = useState("");
 
-  const isValid =
+  const isGrindValid = grind.trim().length > 0;
+  const isValidEspresso =
+    isGrindValid &&
     doseInGrams !== undefined &&
     yieldInGrams !== undefined &&
-    timeInSeconds !== undefined &&
-    grind.trim().length > 0;
+    timeInSeconds !== undefined;
+  const isValidPourOver =
+    isGrindValid &&
+    waterInGrams !== undefined &&
+    coffeeInGrams !== undefined &&
+    time.trim().length > 0;
+  const isValid =
+    (brewType === "espresso" && isValidEspresso) ||
+    (brewType === "pour over" && isValidPourOver);
 
   const [prevOpened, setPrevOpened] = useState(opened);
   if (prevOpened !== opened) {
     setPrevOpened(opened);
+    setBrewType(initialValues?.brewType ?? "espresso");
+    setGrind(initialValues?.grind ?? "");
+    setNotes(initialValues?.notes ?? "");
+    setRating(initialValues?.rating);
     if (initialValues?.brewType === "espresso") {
       setDoseInGrams(initialValues?.doseInGrams);
       setYieldInGrams(initialValues?.yieldInGrams);
@@ -57,10 +71,8 @@ export function BrewModal(props: BrewModalProps) {
     } else if (initialValues?.brewType === "pour over") {
       setCoffeeInGrams(initialValues?.waterInGrams);
       setWaterInGrams(initialValues?.coffeeInGrams);
+      setTime(initialValues?.time);
     }
-    setGrind(initialValues?.grind ?? "");
-    setNotes(initialValues?.notes ?? "");
-    setRating(initialValues?.rating);
   }
 
   function handleSave() {
@@ -69,20 +81,21 @@ export function BrewModal(props: BrewModalProps) {
       onSave({
         brewType,
         rating,
+        grind,
+        notes,
         yieldInGrams: yieldInGrams ?? 0,
         doseInGrams: doseInGrams ?? 0,
         timeInSeconds: timeInSeconds ?? 0,
-        grind,
-        notes,
       });
     } else {
       onSave({
         brewType,
         rating,
-        coffeeInGrams: coffeeInGrams ?? 0,
-        waterInGrams: waterInGrams ?? 0,
         grind,
         notes,
+        time,
+        coffeeInGrams: coffeeInGrams ?? 0,
+        waterInGrams: waterInGrams ?? 0,
       });
     }
   }
@@ -135,7 +148,7 @@ export function BrewModal(props: BrewModalProps) {
               <TextInput
                 withAsterisk
                 label="Grind"
-                placeholder="1.5.0"
+                placeholder="1.6.0"
                 value={grind}
                 onChange={(event) => setGrind(event.target.value)}
               />
@@ -149,14 +162,14 @@ export function BrewModal(props: BrewModalProps) {
                 withAsterisk
                 label="Coffee (g)"
                 min={0}
-                placeholder="18"
+                placeholder="15"
                 value={coffeeInGrams}
                 onChange={setCoffeeInGrams}
               />
               <NumberInput
                 withAsterisk
                 label="Water (g)"
-                placeholder="36"
+                placeholder="250"
                 min={0}
                 value={waterInGrams}
                 onChange={setWaterInGrams}
@@ -165,8 +178,15 @@ export function BrewModal(props: BrewModalProps) {
             <Group grow>
               <TextInput
                 withAsterisk
+                label="Brew time"
+                placeholder="3:00"
+                value={time}
+                onChange={(event) => setTime(event.target.value)}
+              />
+              <TextInput
+                withAsterisk
                 label="Grind"
-                placeholder="1.5.0"
+                placeholder="3.2.0"
                 value={grind}
                 onChange={(event) => setGrind(event.target.value)}
               />
