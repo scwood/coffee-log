@@ -71,7 +71,7 @@ export function BrewModal(props: BrewModalProps) {
     } else if (initialValues?.brewType === "pour over") {
       setCoffeeInGrams(initialValues?.waterInGrams);
       setWaterInGrams(initialValues?.coffeeInGrams);
-      setTime(initialValues?.time);
+      setTime(initialValues?.time ?? "");
     }
   }
 
