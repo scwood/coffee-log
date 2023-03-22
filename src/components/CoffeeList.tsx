@@ -15,8 +15,14 @@ export function CoffeeList() {
   ] = useBoolean(false);
   const [coffeeToEdit, setCoffeeToEdit] = useState<Coffee | undefined>();
 
-  const { createCoffee, updateCoffee, getCoffees, deleteCoffee } =
-    useCoffeeApi();
+  const {
+    createCoffee,
+    updateCoffee,
+    getCoffees,
+    deleteCoffee,
+    moveCoffeeDown,
+    moveCoffeeUp,
+  } = useCoffeeApi();
   const coffees = getCoffees();
 
   function openCreateModal() {
@@ -48,11 +54,15 @@ export function CoffeeList() {
         </Button>
       </Group>
       <Stack>
-        {coffees.map((coffee) => {
+        {coffees.map((coffee, i) => {
           return (
             <CoffeeCard
               key={coffee.id}
               coffee={coffee}
+              disableMoveUp={i === 0}
+              disableMoveDown={i === coffees.length - 1}
+              onMoveUp={(coffee) => moveCoffeeUp(coffee.id)}
+              onMoveDown={(coffee) => moveCoffeeDown(coffee.id)}
               onDelete={(coffee) => deleteCoffee(coffee.id)}
               onEdit={openEditModal}
             />

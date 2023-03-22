@@ -7,16 +7,24 @@ import { EspressoBrew } from "../types/EspressoBrew";
 import { PourOverBrew } from "../types/PourOverBrew";
 
 export function useCoffeeApi() {
-  const [coffeesById, setCoffeesById] = useLocalStorage<Record<string, Coffee>>(
-    {
-      defaultValue: {},
-      key: "coffeesById",
-      getInitialValueInEffect: false,
-    }
-  );
+  const [coffeesById, setCoffeesById] = useLocalStorage<{
+    [coffeeId: string]: Coffee;
+  }>({
+    defaultValue: {},
+    key: "coffeesById",
+    getInitialValueInEffect: false,
+  });
+
+  const [coffeeOrder, setCoffeeOrder] = useLocalStorage<string[]>({
+    defaultValue: Object.keys(coffeesById),
+    key: "coffeeOrder",
+    getInitialValueInEffect: false,
+  });
 
   function getCoffees() {
-    return Object.values(coffeesById);
+    return Object.values(coffeesById).sort((a, b) => {
+      return coffeeOrder.indexOf(a.id) - coffeeOrder.indexOf(b.id);
+    });
   }
 
   function getCoffeeById(id: string): Coffee | undefined {
@@ -31,6 +39,7 @@ export function useCoffeeApi() {
         [id]: { id, name, brewHistory: [] },
       };
     });
+    setCoffeeOrder((prev) => [id, ...prev]);
   }
 
   function updateCoffee(coffee: Coffee) {
@@ -48,6 +57,7 @@ export function useCoffeeApi() {
       delete copy[coffeeId];
       return copy;
     });
+    setCoffeeOrder((prev) => prev.filter((id) => id !== coffeeId));
   }
 
   function createBrew(
@@ -108,6 +118,26 @@ export function useCoffeeApi() {
     });
   }
 
+  function moveCoffeeUp(coffeeId: string) {
+    setCoffeeOrder((prev) => {
+      const currentIndex = prev.indexOf(coffeeId);
+      if (currentIndex === -1 || currentIndex === 0) {
+        return prev;
+      }
+      return arraySwap(prev, currentIndex, currentIndex - 1);
+    });
+  }
+
+  function moveCoffeeDown(coffeeId: string) {
+    setCoffeeOrder((prev) => {
+      const currentIndex = prev.indexOf(coffeeId);
+      if (currentIndex === -1 || currentIndex === prev.length - 1) {
+        return prev;
+      }
+      return arraySwap(prev, currentIndex, currentIndex + 1);
+    });
+  }
+
   return {
     getCoffees,
     getCoffeeById,
@@ -117,5 +147,15 @@ export function useCoffeeApi() {
     createBrew,
     updateBrew,
     deleteBrew,
+    moveCoffeeUp,
+    moveCoffeeDown,
   };
+}
+
+function arraySwap<T>(array: T[], i: number, j: number) {
+  const copy = [...array];
+  const temp = copy[i];
+  copy[i] = copy[j];
+  copy[j] = temp;
+  return copy;
 }

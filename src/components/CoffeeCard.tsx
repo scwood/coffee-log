@@ -1,17 +1,35 @@
 import { ActionIcon, Anchor, Card, Group, Menu, Text } from "@mantine/core";
-import { IconDots, IconPencil, IconTrash } from "@tabler/icons-react";
+import {
+  IconArrowDown,
+  IconArrowUp,
+  IconDots,
+  IconPencil,
+  IconTrash,
+} from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 import { Coffee } from "../types/Coffee";
 
 export interface CoffeeCardProps {
   coffee: Coffee;
-  onDelete: (coffee: Coffee) => void;
+  disableMoveUp: boolean;
+  disableMoveDown: boolean;
+  onMoveUp: (coffee: Coffee) => void;
+  onMoveDown: (coffee: Coffee) => void;
   onEdit: (coffee: Coffee) => void;
+  onDelete: (coffee: Coffee) => void;
 }
 
 export function CoffeeCard(props: CoffeeCardProps) {
-  const { coffee, onDelete, onEdit } = props;
+  const {
+    coffee,
+    disableMoveUp,
+    disableMoveDown,
+    onMoveUp,
+    onMoveDown,
+    onEdit,
+    onDelete,
+  } = props;
 
   return (
     <Card shadow="sm" p="md" radius="sm" withBorder>
@@ -24,6 +42,20 @@ export function CoffeeCard(props: CoffeeCardProps) {
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
+            <Menu.Item
+              disabled={disableMoveUp}
+              icon={<IconArrowUp size={14} />}
+              onClick={() => onMoveUp(coffee)}
+            >
+              Move up
+            </Menu.Item>
+            <Menu.Item
+              disabled={disableMoveDown}
+              icon={<IconArrowDown size={14} />}
+              onClick={() => onMoveDown(coffee)}
+            >
+              Move down
+            </Menu.Item>
             <Menu.Item
               icon={<IconPencil size={14} />}
               onClick={() => onEdit(coffee)}
