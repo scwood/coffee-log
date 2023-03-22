@@ -32,12 +32,17 @@ export function BrewCard(props: BrewCardProps) {
     <Card withBorder shadow="sm" radius="sm">
       <Card.Section withBorder inheritPadding py="sm">
         <Group position="apart">
-          <Text color="dimmed" size="sm">
-            {new Date(brew.timestamp).toLocaleString(undefined, {
-              dateStyle: "long",
-              timeStyle: "short",
-            })}
-          </Text>
+          <Group spacing="xs">
+            <Text transform="capitalize" weight={600} size="sm">
+              Type: {brew.brewType}
+            </Text>
+            <Text color="dimmed" size="sm">
+              {new Date(brew.timestamp).toLocaleString(undefined, {
+                dateStyle: "short",
+                timeStyle: "short",
+              })}
+            </Text>
+          </Group>
           <Menu withinPortal position="bottom-end" shadow="sm">
             <Menu.Target>
               <ActionIcon>
@@ -66,14 +71,6 @@ export function BrewCard(props: BrewCardProps) {
 
       <Card.Section withBorder inheritPadding py="sm">
         <Text size="sm">
-          <Text mb={8}>
-            <Text display="inline" weight={600}>
-              Type:
-            </Text>{" "}
-            <Text display="inline" transform="capitalize">
-              {brew.brewType}
-            </Text>
-          </Text>
           <Stack mb={4}>
             {brew.brewType === "espresso" ? (
               <Group>
@@ -115,6 +112,12 @@ export function BrewCard(props: BrewCardProps) {
                     <IconCoffee />
                   </Tooltip>
                   {String(brew.waterInGrams)}g
+                </Group>
+                <Group spacing={2}>
+                  <Tooltip label="Brew time" color="dark">
+                    <IconAlarm />
+                  </Tooltip>
+                  {String(brew.time)}
                 </Group>
                 <Group spacing={4}>
                   <Text display="inline" weight={600}>
