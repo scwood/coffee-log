@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/coffee-log/static/js/main.f3595c75.js",
+    "main.js": "/coffee-log/static/js/main.83efe049.js",
     "static/js/787.0f114833.chunk.js": "/coffee-log/static/js/787.0f114833.chunk.js",
     "index.html": "/coffee-log/index.html",
-    "main.f3595c75.js.map": "/coffee-log/static/js/main.f3595c75.js.map",
+    "main.83efe049.js.map": "/coffee-log/static/js/main.83efe049.js.map",
     "787.0f114833.chunk.js.map": "/coffee-log/static/js/787.0f114833.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.f3595c75.js"
+    "static/js/main.83efe049.js"
   ]
 }
