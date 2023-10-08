@@ -1,12 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 import { App } from "./components/App";
 import reportWebVitals from "./reportWebVitals";
 
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyDvHuiqzieRUAPxj_tmMfHrrovdtEp2ZkU",
+  authDomain: "coffee-log-12565.firebaseapp.com",
+  projectId: "coffee-log-12565",
+  storageBucket: "coffee-log-12565.appspot.com",
+  messagingSenderId: "124697908043",
+  appId: "1:124697908043:web:00d3a96bf378d07a304ece",
+  measurementId: "G-1WXXY2KZ2J",
+});
+
+getAuth(firebaseApp);
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
     <App />

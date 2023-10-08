@@ -4,6 +4,7 @@ import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 import { BrewHistory } from "./BrewHistory";
 import { CoffeeList } from "./CoffeeList";
 import { Layout } from "./Layout";
+import { AuthProvider } from "./AuthProvider";
 
 const router = createHashRouter([
   {
@@ -33,7 +34,9 @@ export function App() {
       withNormalizeCSS
       theme={{ colorScheme: "dark", headings: { fontWeight: 600 } }}
     >
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </MantineProvider>
   );
 }

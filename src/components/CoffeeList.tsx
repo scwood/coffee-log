@@ -1,4 +1,4 @@
-import { Button, Group, Stack, Text, Title } from "@mantine/core";
+import { Anchor, Button, Group, Stack, Text, Title } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 
@@ -7,6 +7,7 @@ import { useCoffeeApi } from "../hooks/useCoffeeApi";
 import { Coffee } from "../types/Coffee";
 import { CoffeeCard } from "./CoffeeCard";
 import { CoffeeModal } from "./CoffeeModal";
+import { useAuth } from "./AuthProvider";
 
 export function CoffeeList() {
   const [
@@ -14,6 +15,8 @@ export function CoffeeList() {
     { setTrue: openCoffeeModal, setFalse: closeCoffeeModal },
   ] = useBoolean(false);
   const [coffeeToEdit, setCoffeeToEdit] = useState<Coffee | undefined>();
+
+  const { signIn, userId } = useAuth();
 
   const {
     createCoffee,
@@ -71,7 +74,14 @@ export function CoffeeList() {
       </Stack>
       {coffees.length === 0 && (
         <Text align="center" mt="lg" color="dimmed">
-          Add a coffee to get started
+          {userId ? (
+            <>Add a coffee to get started</>
+          ) : (
+            <>
+              Add a coffee or <Anchor onClick={signIn}>sign in</Anchor> to get
+              started
+            </>
+          )}
         </Text>
       )}
       <CoffeeModal
