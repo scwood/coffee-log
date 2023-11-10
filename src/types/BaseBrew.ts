@@ -3,6 +3,6 @@ export interface BaseBrew {
   timestamp: number;
   brewType: "espresso" | "pour over";
   grind: string;
-  notes?: string;
-  rating?: number;
+  notes: string;
+  rating: number;
 }

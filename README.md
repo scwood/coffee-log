@@ -2,9 +2,7 @@
 
 https://scwood.github.io/coffee-log/
 
-Little web app I use track variables between coffee brews.
-
-Data is stored in local storage, so it's usable by anyone. Primarily designed to be used on a phone.
+App I made to track variables between coffee brews. Primarily designed to be used on a phone and anyone can sign in via GitHub or Google and use it!
 
 ## Screenshots
 

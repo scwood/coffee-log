@@ -1,14 +1,20 @@
-import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import {
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+} from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export interface AuthContext {
   displayName: string | null;
   userId: string | null;
-  signIn: () => void;
+  signInWithGoogle: () => void;
+  signInWithGitHub: () => void;
   signOut: () => void;
 }
 
-const authContext = createContext<AuthContext | undefined>(undefined);
+const authContext = createContext<AuthContext | null>(null);
 
 export interface AuthProviderProps {
   children?: JSX.Element;
@@ -17,6 +23,7 @@ export interface AuthProviderProps {
 export function AuthProvider(props: AuthProviderProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     return getAuth().onAuthStateChanged((user) => {
@@ -27,12 +34,21 @@ export function AuthProvider(props: AuthProviderProps) {
         setUserId(null);
         setDisplayName(null);
       }
+      setIsInitialized(true);
     });
   }, []);
 
   return (
-    <authContext.Provider value={{ userId, displayName, signIn, signOut }}>
-      {props.children}
+    <authContext.Provider
+      value={{
+        userId,
+        displayName,
+        signInWithGoogle,
+        signInWithGitHub,
+        signOut,
+      }}
+    >
+      {isInitialized ? props.children : null}
     </authContext.Provider>
   );
 }
@@ -47,8 +63,12 @@ export function useAuth() {
   return context;
 }
 
-function signIn() {
+function signInWithGoogle() {
   return signInWithPopup(getAuth(), new GoogleAuthProvider());
+}
+
+function signInWithGitHub() {
+  return signInWithPopup(getAuth(), new GithubAuthProvider());
 }
 
 function signOut() {

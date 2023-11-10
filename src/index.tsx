@@ -1,7 +1,9 @@
+import "@mantine/core/styles.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 import { App } from "./components/App";
 import reportWebVitals from "./reportWebVitals";
@@ -17,6 +19,7 @@ const firebaseApp = initializeApp({
 });
 
 getAuth(firebaseApp);
+getFirestore(firebaseApp);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

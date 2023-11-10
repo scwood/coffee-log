@@ -1,12 +1,12 @@
 import {
   Container,
-  Title,
   Divider,
-  Group,
   ActionIcon,
   Menu,
+  Flex,
+  UnstyledButton,
 } from "@mantine/core";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import {
   IconBrandGithub,
   IconLogin,
@@ -17,14 +17,18 @@ import {
 import { useAuth } from "./AuthProvider";
 
 export function Layout() {
-  const { signIn, signOut, userId, displayName } = useAuth();
+  const { signOut, userId, displayName } = useAuth();
 
   return (
     <Container p="lg" size="xs">
-      <Group position="apart">
-        <Title order={2}>☕ Coffee log</Title>
-        <Group>
+      <Flex justify="space-between" align="center">
+        <UnstyledButton component={Link} to="/" fz={22} fw="600">
+          ☕ Coffee log
+        </UnstyledButton>
+        <Flex gap="xs">
           <ActionIcon
+            variant="subtle"
+            color="gray"
             component="a"
             target="_blank"
             rel="noopener noreferrer"
@@ -34,24 +38,32 @@ export function Layout() {
           </ActionIcon>
           <Menu>
             <Menu.Target>
-              <ActionIcon>
+              <ActionIcon variant="subtle" color="gray">
                 <IconUser />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
               {displayName && <Menu.Item disabled>{displayName}</Menu.Item>}
-              <Menu.Item
-                onClick={userId ? signOut : signIn}
-                icon={
-                  userId ? <IconLogout size={14} /> : <IconLogin size={14} />
-                }
-              >
-                Sign {userId ? "out" : "in"}
-              </Menu.Item>
+              {userId ? (
+                <Menu.Item
+                  onClick={signOut}
+                  leftSection={<IconLogout size={14} />}
+                >
+                  Sign out
+                </Menu.Item>
+              ) : (
+                <Menu.Item
+                  component={Link}
+                  to="/sign-in"
+                  leftSection={<IconLogin size={14} />}
+                >
+                  Sign in
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
-        </Group>
-      </Group>
+        </Flex>
+      </Flex>
       <Divider my="md" />
       <Outlet />
     </Container>

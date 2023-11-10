@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Group, Modal, TextInput } from "@mantine/core";
+import { Button, Flex, Modal, TextInput } from "@mantine/core";
 
 import { Coffee } from "../types/Coffee";
 
@@ -7,12 +7,13 @@ export interface CoffeeModalProps {
   title: string;
   opened: boolean;
   initialValues?: Coffee;
+  loadingSave: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
 }
 
 export function CoffeeModal(props: CoffeeModalProps) {
-  const { title, opened, initialValues, onClose, onSave } = props;
+  const { title, opened, initialValues, loadingSave, onClose, onSave } = props;
   const [name, setName] = useState("");
   const isValid = name.trim().length > 0;
 
@@ -32,21 +33,21 @@ export function CoffeeModal(props: CoffeeModalProps) {
         value={name}
         onChange={(event) => setName(event.target.value)}
       />
-      <Group position="right">
+      <Flex gap="md">
         <Button variant="default" onClick={onClose}>
           Cancel
         </Button>
         <Button
           color="green"
           disabled={!isValid}
+          loading={loadingSave}
           onClick={() => {
             onSave(name);
-            onClose();
           }}
         >
           Save
         </Button>
-      </Group>
+      </Flex>
     </Modal>
   );
 }

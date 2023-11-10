@@ -1,4 +1,4 @@
-import { ActionIcon, Anchor, Card, Group, Menu, Text } from "@mantine/core";
+import { ActionIcon, Anchor, Card, Flex, Menu, Text } from "@mantine/core";
 import {
   IconArrowDown,
   IconArrowUp,
@@ -14,10 +14,10 @@ export interface CoffeeCardProps {
   coffee: Coffee;
   disableMoveUp: boolean;
   disableMoveDown: boolean;
-  onMoveUp: (coffee: Coffee) => void;
-  onMoveDown: (coffee: Coffee) => void;
-  onEdit: (coffee: Coffee) => void;
-  onDelete: (coffee: Coffee) => void;
+  onMoveUp?: (coffee: Coffee) => void;
+  onMoveDown?: (coffee: Coffee) => void;
+  onEdit?: (coffee: Coffee) => void;
+  onDelete?: (coffee: Coffee) => void;
 }
 
 export function CoffeeCard(props: CoffeeCardProps) {
@@ -33,48 +33,50 @@ export function CoffeeCard(props: CoffeeCardProps) {
 
   return (
     <Card shadow="sm" p="md" radius="sm" withBorder>
-      <Group position="apart" noWrap align="start">
-        <Text weight={600}>{coffee.name}</Text>
+      <Flex align="center" justify="space-between">
+        <Text fw={600}>{coffee.name}</Text>
         <Menu withinPortal position="bottom-end" shadow="sm">
           <Menu.Target>
-            <ActionIcon>
+            <ActionIcon color="gray" variant="subtle">
               <IconDots size={16} />
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
             <Menu.Item
               disabled={disableMoveUp}
-              icon={<IconArrowUp size={14} />}
-              onClick={() => onMoveUp(coffee)}
+              leftSection={<IconArrowUp size={14} />}
+              onClick={() => onMoveUp?.(coffee)}
             >
               Move up
             </Menu.Item>
             <Menu.Item
               disabled={disableMoveDown}
-              icon={<IconArrowDown size={14} />}
-              onClick={() => onMoveDown(coffee)}
+              leftSection={<IconArrowDown size={14} />}
+              onClick={() => onMoveDown?.(coffee)}
             >
               Move down
             </Menu.Item>
             <Menu.Item
-              icon={<IconPencil size={14} />}
-              onClick={() => onEdit(coffee)}
+              leftSection={<IconPencil size={14} />}
+              onClick={() => onEdit?.(coffee)}
             >
               Edit
             </Menu.Item>
             <Menu.Item
-              icon={<IconTrash size={14} />}
+              leftSection={<IconTrash size={14} />}
               color="red"
-              onClick={() => onDelete(coffee)}
+              onClick={() => onDelete?.(coffee)}
             >
               Delete
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-      </Group>
-      <Anchor component={Link} to={`/coffees/${coffee.id}`}>
-        Brew history
-      </Anchor>
+      </Flex>
+      <div>
+        <Anchor component={Link} to={`/coffees/${coffee.id}`}>
+          Brew history
+        </Anchor>
+      </div>
     </Card>
   );
 }

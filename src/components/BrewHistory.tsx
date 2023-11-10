@@ -1,56 +1,25 @@
-import {
-  Anchor,
-  Button,
-  Divider,
-  Group,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Anchor, Button, Divider, Flex, Text, Title } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useState } from "react";
 
-import { useBoolean } from "../hooks/useBoolean";
-import { useCoffeeApi } from "../hooks/useCoffeeApi";
 import { Brew } from "../types/Brew";
 import { BrewCard } from "./BrewCard";
 import { BrewModal } from "./BrewModal";
 import { BrewValues } from "../types/BrewValues";
+import { useCoffeeQuery } from "../hooks/useCoffeeQuery";
+import { useUpdateCoffeeMutation } from "../hooks/useUpdateCoffeeMutation";
+import { getRandomId } from "../utils/firebaseCoffeeApi";
 
 export function BrewHistory() {
-  const [
-    isBrewModalOpen,
-    { setFalse: closeBrewModal, setTrue: openBrewModal },
-  ] = useBoolean(false);
+  const [isBrewModalOpen, setIsBrewModalOpen] = useState(false);
   const [brewToEdit, setBrewToEdit] = useState<Brew | undefined>();
 
-  const { coffeeId } = useParams();
-  const { getCoffeeById, createBrew, updateBrew, deleteBrew } = useCoffeeApi();
-  const coffee = coffeeId ? getCoffeeById(coffeeId) : undefined;
+  const { coffeeId = "" } = useParams();
+  const { data: coffee, isLoading } = useCoffeeQuery(coffeeId);
+  const updateCoffeeMutation = useUpdateCoffeeMutation();
 
-  function openCreateModal() {
-    setBrewToEdit(undefined);
-    openBrewModal();
-  }
-
-  function openEditModal(brew: Brew) {
-    setBrewToEdit(brew);
-    openBrewModal();
-  }
-
-  function onSave(brewValues: BrewValues) {
-    if (!coffee) {
-      return;
-    }
-    if (brewToEdit) {
-      updateBrew(coffee.id, { ...brewToEdit, ...brewValues });
-    } else {
-      createBrew(coffee.id, brewValues);
-    }
-  }
-
-  if (!coffee) {
+  if (!isLoading && !coffee) {
     return <Navigate to="/" />;
   }
 
@@ -59,43 +28,116 @@ export function BrewHistory() {
       <Anchor component={Link} to="/">
         All coffee
       </Anchor>{" "}
-      /<Title order={3}>{coffee.name}</Title>
+      /
+      <Title c={coffee ? undefined : "dimmed"} order={3}>
+        {coffee?.name ?? "..."}
+      </Title>
       <Divider mt="md" />
-      <Group position="apart" align="center" my="lg">
+      <Flex justify="space-between" my="lg">
         <Title order={3}>Brew history</Title>
-        <Button color="green" leftIcon={<IconPlus />} onClick={openCreateModal}>
+        <Button
+          color="green"
+          leftSection={<IconPlus />}
+          onClick={openCreateModal}
+        >
           New brew
         </Button>
-      </Group>
-      <Stack>
-        {coffee.brewHistory.map((brew) => {
-          return (
-            <BrewCard
-              key={brew.id}
-              brew={brew}
-              onEdit={openEditModal}
-              onDelete={() => deleteBrew(coffee.id, brew.id)}
-            />
-          );
-        })}
-      </Stack>
-      {coffee.brewHistory.length === 0 && (
-        <Text align="center" mt="lg" color="dimmed">
-          No brews yet
-        </Text>
+      </Flex>
+      {!!coffee && (
+        <>
+          <Flex direction="column" gap="md">
+            {coffee.brewHistory.map((brew) => {
+              return (
+                <BrewCard
+                  key={brew.id}
+                  brew={brew}
+                  onEdit={openEditModal}
+                  onDelete={handleDelete}
+                />
+              );
+            })}
+          </Flex>
+          {coffee.brewHistory.length === 0 && (
+            <Text ta="center" mt="lg" c="dimmed">
+              No brews yet
+            </Text>
+          )}
+          <BrewModal
+            title={brewToEdit ? "Edit brew" : "New brew"}
+            initialValues={
+              brewToEdit
+                ? brewToEdit
+                : { ...coffee.brewHistory[0], notes: "", rating: 0 }
+            }
+            opened={isBrewModalOpen}
+            onClose={() => setIsBrewModalOpen(false)}
+            onSave={handleSave}
+          />
+        </>
       )}
-      <BrewModal
-        title={brewToEdit ? "Edit brew" : "New brew"}
-        coffee={coffee}
-        initialValues={
-          brewToEdit
-            ? brewToEdit
-            : { ...coffee.brewHistory[0], notes: undefined, rating: undefined }
-        }
-        opened={isBrewModalOpen}
-        onClose={closeBrewModal}
-        onSave={onSave}
-      />
     </>
   );
+
+  function handleSave(brewValues: BrewValues) {
+    if (brewToEdit) {
+      handleEdit(brewValues);
+    } else {
+      handleCreate(brewValues);
+    }
+  }
+
+  function handleEdit(brewValues: BrewValues) {
+    if (!coffee || !brewToEdit) {
+      return;
+    }
+    updateCoffeeMutation.mutate({
+      coffee: {
+        ...coffee,
+        brewHistory: coffee.brewHistory.map((prevBrew) => {
+          return prevBrew.id === brewToEdit.id
+            ? { ...brewToEdit, ...brewValues }
+            : prevBrew;
+        }),
+      },
+    });
+  }
+
+  function handleCreate(brewValues: BrewValues) {
+    if (!coffee) {
+      return;
+    }
+    updateCoffeeMutation.mutate({
+      coffee: {
+        ...coffee,
+        brewHistory: [
+          { id: getRandomId(), timestamp: Date.now(), ...brewValues },
+          ...coffee.brewHistory,
+        ],
+      },
+    });
+  }
+
+  function handleDelete(brew: Brew) {
+    if (!coffee) {
+      return;
+    }
+    updateCoffeeMutation.mutate({
+      coffee: {
+        ...coffee,
+        brewHistory: coffee.brewHistory.filter((prevBrew) => {
+          return prevBrew.id !== brew.id;
+        }),
+      },
+    });
+  }
+
+  function openCreateModal() {
+    setBrewToEdit(undefined);
+    setIsBrewModalOpen(true);
+  }
+
+  function openEditModal(brew: Brew) {
+    setBrewToEdit(brew);
+    setIsBrewModalOpen(true);
+  }
 }

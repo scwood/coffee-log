@@ -1,12 +1,11 @@
 import {
   Text,
   Card,
-  Group,
   Menu,
   ActionIcon,
   Rating,
-  Stack,
   Tooltip,
+  Flex,
 } from "@mantine/core";
 import {
   IconAlarm,
@@ -29,36 +28,35 @@ export function BrewCard(props: BrewCardProps) {
   const { brew, onEdit, onDelete } = props;
 
   return (
-    <Card withBorder shadow="sm" radius="sm">
+    <Card withBorder shadow="sm" radius="sm" fz="sm">
       <Card.Section withBorder inheritPadding py="sm">
-        <Group position="apart">
-          <Group spacing="xs">
-            <Text transform="capitalize" weight={600} size="sm">
+        <Flex align="center" justify="space-between">
+          <Flex gap="xs">
+            <Text tt="capitalize" fw={600} size="sm">
               Type: {brew.brewType}
             </Text>
-            <Text color="dimmed" size="sm">
+            <Text size="sm" c="dimmed">
               {new Date(brew.timestamp).toLocaleString(undefined, {
                 dateStyle: "short",
                 timeStyle: "short",
               })}
             </Text>
-          </Group>
+          </Flex>
           <Menu withinPortal position="bottom-end" shadow="sm">
             <Menu.Target>
-              <ActionIcon>
+              <ActionIcon variant="subtle" color="gray">
                 <IconDots size={16} />
               </ActionIcon>
             </Menu.Target>
-
             <Menu.Dropdown miw={130}>
               <Menu.Item
-                icon={<IconPencil size={14} />}
+                leftSection={<IconPencil size={14} />}
                 onClick={() => onEdit(brew)}
               >
                 Edit
               </Menu.Item>
               <Menu.Item
-                icon={<IconTrash size={14} />}
+                leftSection={<IconTrash size={14} />}
                 color="red"
                 onClick={() => onDelete(brew)}
               >
@@ -66,78 +64,75 @@ export function BrewCard(props: BrewCardProps) {
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
-        </Group>
+        </Flex>
       </Card.Section>
-
-      <Card.Section withBorder inheritPadding py="sm">
-        <Text size="sm">
-          <Stack mb={4}>
-            {brew.brewType === "espresso" ? (
-              <Group>
-                <Group spacing={2}>
-                  <Tooltip label="Dose (g)" color="dark">
-                    <IconScale />
-                  </Tooltip>
-                  {String(brew.doseInGrams)}g
-                </Group>
-                <Group spacing={4}>
-                  <Tooltip label="Yield (g)" color="dark">
-                    <IconCoffee />
-                  </Tooltip>
-                  {String(brew.yieldInGrams)}g
-                </Group>
-                <Group spacing={2}>
-                  <Tooltip label="Brew time (s)" color="dark">
-                    <IconAlarm />
-                  </Tooltip>
-                  {String(brew.timeInSeconds)}s
-                </Group>
-                <Group spacing={4}>
-                  <Text display="inline" weight={600}>
-                    Grind:
-                  </Text>
-                  {brew.grind}
-                </Group>
-              </Group>
-            ) : (
-              <Group>
-                <Group spacing={2}>
-                  <Tooltip label="Coffee (g)" color="dark">
-                    <IconScale />
-                  </Tooltip>
-                  {String(brew.coffeeInGrams)}g
-                </Group>
-                <Group spacing={4}>
-                  <Tooltip label="Water (g)" color="dark">
-                    <IconCoffee />
-                  </Tooltip>
-                  {String(brew.waterInGrams)}g
-                </Group>
-                <Group spacing={2}>
-                  <Tooltip label="Brew time" color="dark">
-                    <IconAlarm />
-                  </Tooltip>
-                  {String(brew.time)}
-                </Group>
-                <Group spacing={4}>
-                  <Text display="inline" weight={600}>
-                    Grind:
-                  </Text>
-                  {brew.grind}
-                </Group>
-              </Group>
-            )}
-            {brew.rating && <Rating value={brew.rating} readOnly />}
-            {brew.notes?.trim() && (
-              <div>
-                <Text display="inline" weight={600}>
-                  Notes:
-                </Text>{" "}
-                {brew.notes}
-              </div>
-            )}
-          </Stack>
-        </Text>
+      <Card.Section withBorder inheritPadding py={14}>
+        <Flex direction="column" gap="sm">
+          {brew.brewType === "espresso" ? (
+            <Flex gap="sm">
+              <Flex gap={4}>
+                <Tooltip label="Dose (g)" color="dark">
+                  <IconScale />
+                </Tooltip>
+                {String(brew.doseInGrams)}g
+              </Flex>
+              <Flex gap={4}>
+                <Tooltip label="Yield (g)" color="dark">
+                  <IconCoffee />
+                </Tooltip>
+                {String(brew.yieldInGrams)}g
+              </Flex>
+              <Flex gap={2}>
+                <Tooltip label="Brew time (s)" color="dark">
+                  <IconAlarm />
+                </Tooltip>
+                {String(brew.timeInSeconds)}s
+              </Flex>
+              <Flex gap={4}>
+                <Text display="inline" fw={600} fz="sm">
+                  Grind:
+                </Text>
+                {brew.grind}
+              </Flex>
+            </Flex>
+          ) : (
+            <Flex gap="sm">
+              <Flex gap={2}>
+                <Tooltip label="Coffee (g)" color="dark">
+                  <IconScale />
+                </Tooltip>
+                {String(brew.coffeeInGrams)}g
+              </Flex>
+              <Flex gap={4}>
+                <Tooltip label="Water (g)" color="dark">
+                  <IconCoffee />
+                </Tooltip>
+                {String(brew.waterInGrams)}g
+              </Flex>
+              <Flex gap={2}>
+                <Tooltip label="Brew time" color="dark">
+                  <IconAlarm />
+                </Tooltip>
+                {String(brew.time)}
+              </Flex>
+              <Flex gap={4}>
+                <Text display="inline" fw={600} fz="sm">
+                  Grind:
+                </Text>
+                {brew.grind}
+              </Flex>
+            </Flex>
+          )}
+          {brew.rating > 0 && <Rating value={brew.rating} readOnly />}
+          {brew.notes?.trim() && (
+            <div>
+              <Text display="inline" fw={600} fz="sm">
+                Notes:
+              </Text>{" "}
+              {brew.notes}
+            </div>
+          )}
+        </Flex>
       </Card.Section>
     </Card>
   );
